@@ -16,7 +16,8 @@ jobs:
       - run: npm install
       - run: npm run cattos
         env:
-          CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-          CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-          ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_SECRET }}
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}

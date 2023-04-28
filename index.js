@@ -39,7 +39,7 @@ const tweet = async (uri) => {
 
       console.log("New Cat successfully posted!🐕‍🦺");
     } catch (e) {
-      console.error("Something went wrong...😫", error);
+      console.error("Something went wrong...😫", e);
     }
   });
 };

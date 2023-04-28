@@ -55,7 +55,7 @@ const tweet = async (buffer) => {
   try {
     // const mediaId = await twitterClient.v1.uploadMedia("./image.png");
     const mediaId = await twitterClient.v1.uploadMedia(buffer, {
-      mimeType: (await fileTypeFromBuffer(buffer))?.mime,
+      mimeType: (await fileTypeFromBuffer(buffer)).mime,
     });
 
     await twitterClient.v2.tweet({

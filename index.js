@@ -2,6 +2,7 @@ require("dotenv").config({ path: __dirname + "/.env" });
 const { twitterClient } = require("./twitterClient.js");
 const { download } = require("./utilities");
 const fs = require("fs");
+const fetch = require("node-fetch");
 
 fetch("https://api.thecatapi.com/v1/images/search?limit=1")
   .then((res) => res.json())

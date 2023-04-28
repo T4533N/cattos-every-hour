@@ -1,48 +1,44 @@
-const Twitter = require("twitter");
-const fetch = require("node-fetch");
-const request = require("request").defaults({ encoding: null });
+require("dotenv").config({ path: __dirname + "/.env" });
+const { twitterClient } = require("./twitterClient.js");
+const { download } = require("./utilities");
+const fs = require("fs");
 
-if (process.env.NODE_ENV === "development") {
-  require("dotenv").config();
-}
-
-const client = new Twitter({
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token_key: process.env.ACCESS_TOKEN_KEY,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET,
-});
-
-function sendImageToTwitter(imageBuffer) {
-  // Adapted from this example - https://github.com/desmondmorris/node-twitter/tree/master/examples#media
-  client.post("media/upload", { media: imageBuffer }, (error, media) => {
-    if (error) {
-      console.error("Something went wrong uploading image...😫", error);
-    } else {
-      client
-        .post("statuses/update", {
-          status: "",
-          media_ids: media.media_id_string,
-        })
-        .then((resp) => console.log("🐕‍🦺New cat successfully posted!🐕‍🦺"))
-        .catch((error) =>
-          console.error(
-            "Thats ruff, something went wrong posting to Twitter...😒",
-            error
-          )
-        );
-    }
-  });
-}
-
-fetch("http://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true")
+fetch("https://api.thecatapi.com/v1/images/search?limit=1")
   .then((res) => res.json())
-  .then((json) => json[0])
+  .then((json) => json[0].url)
   .then((imageURL) => {
-    request.get(imageURL, (err, res, body) => {
-      sendImageToTwitter(body);
-    });
+    console.log(imageURL);
+    tweet(imageURL);
   })
   .catch((error) =>
-    console.error("There was an error fetching a shibe...😑", error)
+    console.error("There was an error fetching a cat...😑", error)
   );
+
+const tweet = async (uri) => {
+  const filename = "image.png";
+
+  download(uri, filename, async function () {
+    try {
+      const mediaId = await twitterClient.v1.uploadMedia("./image.png");
+
+      await twitterClient.v2.tweet({
+        text: "",
+        media: {
+          media_ids: [mediaId],
+        },
+      });
+
+      fs.unlink(filename, function (err) {
+        if (err) {
+          console.log("No file to delete. 😥", err);
+        } else {
+          console.log("Successfully deleted the file. 🚀");
+        }
+      });
+
+      console.log("New Cat successfully posted!🐕‍🦺");
+    } catch (e) {
+      console.error("Something went wrong...😫", error);
+    }
+  });
+};

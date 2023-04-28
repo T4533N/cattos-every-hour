@@ -3,17 +3,20 @@ const { twitterClient } = require("./twitterClient.js");
 const { download } = require("./utilities");
 const fs = require("fs");
 const fetch = require("node-fetch");
+const CronJob = require("cron").CronJob;
 
-fetch("https://api.thecatapi.com/v1/images/search?limit=1")
-  .then((res) => res.json())
-  .then((json) => json[0].url)
-  .then((imageURL) => {
-    console.log(imageURL);
-    tweet(imageURL);
-  })
-  .catch((error) =>
-    console.error("There was an error fetching a cat...😑", error)
-  );
+const fetchImageAndTrigger = () => {
+  fetch("https://api.thecatapi.com/v1/images/search?limit=1")
+    .then((res) => res.json())
+    .then((json) => json[0].url)
+    .then((imageURL) => {
+      console.log(imageURL);
+      tweet(imageURL);
+    })
+    .catch((error) =>
+      console.error("There was an error fetching a cat...😑", error)
+    );
+};
 
 const tweet = async (uri) => {
   const filename = "image.png";
@@ -43,3 +46,9 @@ const tweet = async (uri) => {
     }
   });
 };
+
+const cronTweet = new CronJob("30 * * * * *", async () => {
+  fetchImageAndTrigger();
+});
+
+cronTweet.start();
